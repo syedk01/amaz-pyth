@@ -97,8 +97,8 @@ server.createServer(function(req, res){
 		send_version_number(req, res);
 		break;
 	case '/loadfromurl':
-		sys.puts('Loading from url...');
-		load_url(req, res);
+		sys.puts('Loading from url...'); 
+		load_url(req, res); //The function to handle load from url
 		break;
 	default:
 		serve_webpage(req, res);
@@ -635,8 +635,8 @@ function load_url(req, res) {
 		//	var url = req.on('end', function(){var post =  qs.parse(body); return post['url'];});
 		//	var loadurl = JSON.parse(req.data);			
 		//	var url = loadurl.url;
-			var saveto = '/home/ubuntu/tmp/' + rand.generateKey() + ".dcm";
-			var execution_command='wget -O ' + saveto+ ' ' + url;
+			var saveto = '/home/ubuntu/tmp/' + rand.generateKey() + ".dcm"; //File name of the dcm to be saved
+			var execution_command='wget -O ' + saveto+ ' ' + url; //Downloading the dcm with wget
 			sys.puts('Executing: ' + execution_command);
 			exec(execution_command, 
 				function (error, stdout, stderr)
@@ -666,7 +666,7 @@ function load_url(req, res) {
 								
 		     
 								//var response_text = JSON.stringify({'subjective_result': data[1], 'objective_result': data[0]});
-								res.writeHead(200, {'content-type': 'application/octet-stream'});
+								res.writeHead(200, {'content-type': 'application/octet-stream'}); //Sending the binary data response to the javascript
 								res.write(data);
 								res.end();
                      

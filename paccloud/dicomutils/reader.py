@@ -1,3 +1,7 @@
+#Author: Rifat Mahmud(rftmhmd@gmail.com)
+#Developed for: Syed Khalid, Pacific Cloud(syedk@pacificloud.com)
+#This file reads dicom files
+
 #!/usr/bin/python
 
 #import vtk
@@ -21,7 +25,7 @@ import dicom
 # #	return ArrayDicom
 	# return arrayData
 
-def read(file):
+def read(file): #Reading the dicom images. Now only handles single slice dicom. Reading of multislice dicom has to be added
 	ds=dicom.read_file(file)
 	img=ds.pixel_array
 	return img

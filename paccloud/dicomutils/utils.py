@@ -1,3 +1,8 @@
+#Author: Rifat Mahmud(rftmhmd@gmail.com)
+#Developed for: Syed Khalid, Pacific Cloud(syedk@pacificloud.com)
+#This file has the utility functions for objective feature extraction from image and related processing tools
+
+
 #!/usr/bin/python
 import numpy as np
 from scipy import ndimage
@@ -7,7 +12,7 @@ from numpy import matlib, dtype
 from numpy.linalg import eig, inv
 from numpy import fft
 
-def get_line(x1, y1, x2, y2):
+def get_line(x1, y1, x2, y2): #Returns list of points as a line between two points
 	x1=int(x1)
 	y1=int(y1)
 	x2=int(x2)
@@ -45,7 +50,7 @@ def get_line(x1, y1, x2, y2):
         	points.reverse()
     	return points
 
-def fit_ellipse(x,y):
+def fit_ellipse(x,y): # Fit a blob shape to an ellipse and sends back the ellipse equation
     x = x[:,np.newaxis]
     y = y[:,np.newaxis]
     D =  np.hstack((x*x, x*y, y*y, x, y, np.ones_like(x)))
@@ -57,7 +62,7 @@ def fit_ellipse(x,y):
     a = V[:,n]
     return a
 
-def ellipse_center(a):
+def ellipse_center(a): 
     b,c,d,f,g,a = a[1]/2, a[2], a[3]/2, a[4]/2, a[5], a[0]
     num = b*b-a*c
     x0=(c*d-b*f)/num
@@ -80,7 +85,7 @@ def ellipse_axis_length( a ):
 def get_distance(x1, y1, x2, y2):
 	return math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))
 
-def get_outline_mask(p, rows, cols):
+def get_outline_mask(p, rows, cols): #Get outline mask of the marked area
 	s1=p.split('(')
 	x=[]
 	y=[]
@@ -180,9 +185,10 @@ def get_outline_mask(p, rows, cols):
 	return img
 
 
-def rasterize(img):
+def rasterize(img): #Feels the whole in binary image
 	return ndimage.binary_fill_holes(img).astype(np.uint8)
-def mean_pixel_value(img, mask):
+
+def mean_pixel_value(img, mask): #Getting the mean pixel value of the masked area
         assert(np.array_equal(img.shape, mask.shape)==True)
 
         newimg=np.zeros(img.shape)
@@ -194,7 +200,7 @@ def mean_pixel_value(img, mask):
 
         return np.mean(newimg)
 
-def std_dev_pixel_value(img, mask):
+def std_dev_pixel_value(img, mask): # Standard deviation of the pixels of the masked area
         assert(np.array_equal(img.shape, mask.shape)==True)
 
         newimg=np.zeros(img.shape)
@@ -205,12 +211,12 @@ def std_dev_pixel_value(img, mask):
                                 newimg[i, j]=img[i, j]
         return np.std(newimg)
 
-def effective_diameter(mask):
+def effective_diameter(mask): #Diameter of the blob shape
         area=np.sum(mask)
         d=math.sqrt(area/math.pi)
         return d
 
-def degree_of_circularity(mask):
+def degree_of_circularity(mask): #How circular is the masked area?
 	centroids = ndimage.measurements.center_of_mass(mask)
 	x = 0
 	y = 0
@@ -256,7 +262,7 @@ def degree_of_circularity(mask):
 	
 	return overlapping_nodule_area/nodule_area
 
-def degree_of_ellipticity(mask):
+def degree_of_ellipticity(mask): #How elliptical is the marked area?
 	pts = np.nonzero(mask)
 	#print pts	
 	a  = fit_ellipse(np.array([pts[1][i] for i in xrange(pts[1].shape[0])]), np.array([pts[0][i] for i in xrange(pts[0].shape[0])]))
@@ -301,7 +307,7 @@ def degree_of_ellipticity(mask):
 	
     	return overlapping_nodule_area/nodule_area
 	
-def marginal_irregularity(mask):
+def marginal_irregularity(mask): #Irregularity on the edge of the mask
 
         pts = np.nonzero(mask)
         #print pts
@@ -352,7 +358,7 @@ def marginal_irregularity(mask):
         return first_moment, rmsv, degree_of_irregularity
 
 
-def border_definition(image, mask):
+def border_definition(image, mask): #Pixel information on the border of the mask
 	n = 1 # should be a odd number
 	
 	#Eassert(n>=1 and (n/2)!=math.floor(n/2))
@@ -370,7 +376,7 @@ def border_definition(image, mask):
 
 	return np.mean(Fm)
 		
-def radial_gradient_index(image, mask):
+def radial_gradient_index(image, mask): #Still unused
 	pts = np.nonzero(mask)
 	ind = np.arange(mask.shape[0] * mask.shape[1])
 	ind = ind.reshape([mask.shape[0], mask.shape[1]])
@@ -397,7 +403,7 @@ def radial_gradient_index(image, mask):
 	RG = RG_nominator/RG_denominator
 	return RG
 
-def tangential_gradient_index(image, mask):
+def tangential_gradient_index(image, mask): #still unused
         pts = np.nonzero(mask)
         ind = np.arange(mask.shape[0] * mask.shape[1])
         ind = ind.reshape([mask.shape[0], mask.shape[1]])
@@ -425,7 +431,7 @@ def tangential_gradient_index(image, mask):
         TG = TG_nominator/TG_denominator
         return TG
 
-def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):
+def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):#unused
 	hwidth = float(float(maskWidth-1)/2)
 	x = np.arange(-hwidth, hwidth+1, 1)
 	y = np.arange(-hwidth, hwidth+1, 1)
@@ -476,14 +482,14 @@ def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):
 	
 		
 
-class gauss:
+class gauss: #Unused
 	length = None
 	sigma = None
 	maskWidth = None
 	theta = None
 	templates = None
 
-def create_gaussian_masks(gaussLength, maskWidth, maxSigma, gaussSigma, theta):
+def create_gaussian_masks(gaussLength, maskWidth, maxSigma, gaussSigma, theta): #unused
 	g = gauss()	
  	g.length = gaussLength
 	g.sigma = gaussSigma
@@ -498,10 +504,10 @@ def create_gaussian_masks(gaussLength, maskWidth, maxSigma, gaussSigma, theta):
 			templates[:, :, i, j] = create_gauss(g.theta[j], g.length, g.maskWidth, g.sigma[i], maxSigma)
 	g.templates = templates
 
-def line_enhancement_index(image, mask):
+def line_enhancement_index(image, mask): #Unused
 	filter_size = 11
 	
-def calculate_obj_features(image, p):
+def calculate_obj_features(image, p): #This function combine all other function to calculate objective features
 	outline_mask = get_outline_mask(p, image.shape[0], image.shape[1])
 	mask = rasterize(outline_mask)
 	
@@ -530,7 +536,7 @@ def calculate_obj_features(image, p):
 	return features
 
 	
-if __name__=='__main__':
+if __name__=='__main__':# A test main function, never used
 	import sys
  
 	img=get_outline_mask('(298, 436),(298, 436),(298, 434),(298, 428),(298, 425),(298, 422),(299, 417),(299, 415),(300, 414),(300, 413),(300, 412),(300, 411),(300, 409),(300, 408),(297, 398),(295, 395),(291, 392),(290, 390),(289, 389),(285, 388),(282, 388),(278, 387),(277, 387),(276, 387),(275, 387),(272, 387),(271, 387),(271, 388),(270, 388),(270, 389),(268, 390),(267, 394),(264, 397),(263, 401),(260, 407),(258, 411),(254, 418),(254, 421),(254, 422),(254, 424),(254, 426),(254, 429),(254, 431),(254, 432),(255, 435),(258, 436),(261, 437),(267, 438),(271, 440),(273, 440),(274, 440),(276, 440),(277, 440),(278, 440),(280, 440),(282, 440),(283, 440),(284, 440),(286, 440),(287, 440),(288, 440),(289, 440),(290, 438),(292, 437),(294, 437),(294, 436),(296, 434),(297, 431),(299, 428),(300, 426),(300, 424),(302, 423)', 500, 500)

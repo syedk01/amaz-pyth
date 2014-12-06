@@ -1,3 +1,7 @@
+#Author: Rifat Mahmud(rftmhmd@gmail.com)
+#Developed for: Syed Khalid, Pacific Cloud(syedk@pacificloud.com)
+#This file load svm training data and predicts
+
 #!/usr/bin/python
 
 from sklearn import svm
