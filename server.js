@@ -15,7 +15,7 @@ var connect    = require('connect');
 var serveStatic= require('serve-static');
 var rand       = require('generate-key');
    	
-var toolbox_path     = '/home/ubuntu';
+var toolbox_path     = process.env.PAC_HOME
 //var result_path      = toolbox_path + fs.readFileSync(toolbox_path + '/output_path.txt', "utf8").replace('.','') + '/';
 //var upload_path      = toolbox_path + fs.readFileSync(toolbox_path + '/dataset_path_LIDC.txt', "utf8").replace('.','') + '/';
 var result_path      = toolbox_path + '/OUTPUT/';
