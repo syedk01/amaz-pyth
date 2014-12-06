@@ -10,7 +10,7 @@ The following instructions are for Debian based systems(Ubuntu, Debian, Mint etc
 * Run "sudo ./setup.sh". It would install gcc, python, node js and other dependencies if you don't have them already installed. It might take some time.
 * After the setup finished do ". ~/.bashrc". This will update your environment variables.
 * Run ./svm_lidc_sub_trainer.py and ./svm_lidc_ob_trainer.py one after another. The 2nd one will take a lot of time. Be patient.
-* Run "sudo nodjes server.js 0". Now you can access the dicom viewer with http://<your-ip/web address-here>:8080 and start annotating.
+* Run "sudo nodjes server.js 0". Now you can access the dicom viewer with http://(your-ip/web-address/localhost-here):8080 and start annotating.
 
 TODO:
 =====
