@@ -2,6 +2,7 @@
 
 import csv
 import numpy as np
+import os
 #import sklearn as skl
 from sklearn import svm
 from sklearn import cross_validation
@@ -15,9 +16,11 @@ for row in reader:
 	Y.append(row.pop())
 	X=np.vstack((X, row))
 
+
 clf=svm.SVC()
 clf.fit(X, Y)
-joblib.dump(clf, 'Data/LIDC/Subjective/svm_lidc_sub_train_data.pkl')
+
+joblib.dump(clf, os.environ["PAC_HOME"]+'/paccloud/data/LIDC/subjective/svm_lidc_sub_train_data.pkl')
 
 
 #scores=cross_validation.cross_val_score(clf, X, np.array(Y), cv=10)

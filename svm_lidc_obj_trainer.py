@@ -3,6 +3,7 @@
 import csv
 import numpy as np
 import pickle
+import os
 from sklearn import svm
 from sklearn import cross_validation
 from sklearn.externals import joblib
@@ -21,7 +22,7 @@ for row in reader:
 
 clf=svm.SVC()
 clf.fit(X, Y)
-joblib.dump(clf, 'paccloud/data/LIDC/objective/svm_lidc_obj_train_data.pkl')
+joblib.dump(clf, os.environ["PAC_HOME"]+'/paccloud/data/LIDC/objective/svm_lidc_obj_train_data.pkl')
 
 #scores=cross_validation.cross_val_score(clf, X, np.array(Y), cv=10)
 
