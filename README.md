@@ -5,7 +5,7 @@ Installation Guide:
 
 The following instructions are for Debian based systems(Ubuntu, Debian, Mint etc.) only and tested for Ubuntu 14.04.
 
-*(Recommended) Update your repo with "sudo apt-get update"
+*Recommended: Update your repo with "sudo apt-get update"
 *Make the setup.sh executable with "sudo chmod +x setup.sh"
 *Run "sudo ./setup.sh". It would install gcc, python, node js and other dependencies if you don't have them already installed. It might take some time.
 *After the setup finished do ". ~/.bashrc". This will update your environment variables.
