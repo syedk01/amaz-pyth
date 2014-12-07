@@ -91,7 +91,7 @@ dwv.io.File.prototype.load = function(ioArray)
     for (var i = 0; i < ioArray.length; ++i)
     {
         var file = ioArray[i];
-		alert(file.name);
+		alert(file.pathname);
         var reader = new FileReader();
         if( file.type.match("image.*") )
         {
