@@ -14,8 +14,10 @@ var util       = require('util');
 var connect    = require('connect');
 var serveStatic= require('serve-static');
 var rand       = require('generate-key');
+var process    = require('process');
    	
-var toolbox_path     = process.env.PAC_HOME
+var toolbox_path     = "./";
+sys.puts(toolbox_path);
 //var result_path      = toolbox_path + fs.readFileSync(toolbox_path + '/output_path.txt', "utf8").replace('.','') + '/';
 //var upload_path      = toolbox_path + fs.readFileSync(toolbox_path + '/dataset_path_LIDC.txt', "utf8").replace('.','') + '/';
 var result_path      = toolbox_path + '/OUTPUT/';

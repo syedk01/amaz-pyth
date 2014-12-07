@@ -31,5 +31,5 @@ clf.fit(X, Y)
 joblib.dump(clf, os.environ["PAC_HOME"]+'/paccloud/data/LIDC/objective/svm_lidc_obj_train_data.pkl') #Saving the objective training file
 
 #scores=cross_validation.cross_val_score(clf, X, np.array(Y), cv=10)
-
+#print "Scores"
 #print scores

@@ -9,6 +9,7 @@ import sys
 import logging as log
 import os
 from paccloud.classifier import svm
+from paccloud.classifier import knn
 import numpy as np
 from paccloud.dicomutils import reader
 from paccloud.dicomutils import utils
@@ -46,7 +47,13 @@ if classifier_type=='svm':
 	clfsub = svm.load(pklfilesub)
 	clfobj = svm.load(pklfileobj)
 	psub = svm.predict(clfsub, np.array(Xsub))
-	pobj = svm.predict(clfobj, np.array(Xobj))	
+	pobj = svm.predict(clfobj, np.array(Xobj))
+elif classifier_type=='knn':
+        clfsub = svm.load(pklfilesub)
+        clfobj = svm.load(pklfileobj)
+        psub = svm.predict(clfsub, np.array(Xsub))
+        pobj = svm.predict(clfobj, np.array(Xobj))
+		
 pobj = float(pobj[0])/5#Objective prediction value
 psub = float(psub[0])/5#Subjective prediction value
 #Writing the prediction

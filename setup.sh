@@ -59,3 +59,4 @@ chmod -R 777 paccloud/data
 
 echo "Making all scripts executable...."
 chmod +x *.py
+
