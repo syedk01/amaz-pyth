@@ -55,5 +55,7 @@ mkdir paccloud/data/LIDC/subjective
 mkdir paccloud/data/LIDC/objective
 mkdir paccloud/data/INBREAST/subjective
 mkdir paccloud/data/INBREAST/objective
+chmod -R 777 paccloud/data
+
 echo "Making all scripts executable...."
 chmod +x *.py

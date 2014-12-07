@@ -1,8 +1,8 @@
+#!/usr/bin/python
+
 #Author: Rifat Mahmud(rftmhmd@gmail.com)
 #Developed for: Syed Khalid, Pacific Cloud(syedk@pacificloud.com)
 #This file reads dicom files
-
-#!/usr/bin/python
 
 #import vtk
 import numpy as np

@@ -1,9 +1,9 @@
+#!/usr/bin/python
+
 #Author: Rifat Mahmud(rftmhmd@gmail.com)
 #Developed for: Syed Khalid, Pacific Cloud(syedk@pacificloud.com)
 #This file has the utility functions for objective feature extraction from image and related processing tools
 
-
-#!/usr/bin/python
 import numpy as np
 from scipy import ndimage
 from scipy.ndimage import measurements
