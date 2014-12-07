@@ -142,10 +142,10 @@ dwv.gui.onClassifyClick = function(event)
 		alert('Please use the ROI (under Draw) or livewire tool to annotate a nodule before classification.');
 	    return;
 	}
-	if(fileselect.files.length === 0){
+/*	if(fileselect.files.length === 0){
 		alert('Please load a DICOM image and use the livewire tool to annotate a nodule before classification.');
 	    return;
-	}
+	}*/
 	
 	var file = document.getElementById("imagefiles").files[0];
 //	alert(file);
