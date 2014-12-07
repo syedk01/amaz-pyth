@@ -98,7 +98,7 @@ dwv.gui.base.appendUrlLoadHtml = function()
     urlLoadDiv.id = "imageurldiv";
     urlLoadDiv.style.display = "none";
     urlLoadDiv.appendChild(urlLoadInput);
-
+	alert("HERE");
     // node
     var node = document.getElementById("loaderlist");
     // append
