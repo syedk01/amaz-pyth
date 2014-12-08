@@ -13,14 +13,13 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn import cross_validation
 from sklearn.externals import joblib
 
-X = np.empty([0, 11]) #Feature array
+X = np.empty([0, 12]) #Feature array
 Y = [] #Target class
 f = open('obj_master_file.csv', 'rb')#Reading the training data
 reader = csv.reader(f)
 
 for row in reader:
 	Y.append(row.pop())
-	row.pop()
 	X=np.vstack((X, row))
 
 

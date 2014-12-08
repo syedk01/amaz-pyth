@@ -13,7 +13,7 @@ from sklearn import svm
 from sklearn import cross_validation
 from sklearn.externals import joblib
 
-X = np.empty([0, 11]) #Feature array
+X = np.empty([0, 12]) #Feature array
 Y = [] #Target class
 f = open('obj_master_file.csv', 'rb') #Reading the training data
 reader = csv.reader(f)
@@ -21,7 +21,6 @@ reader = csv.reader(f)
 for row in reader:
 	#Popping last 3 values, as first 9 objective features are considered for now
 	Y.append(row.pop())
-	row.pop()
 	X=np.vstack((X, row))
 
 clf = svm.SVC()
