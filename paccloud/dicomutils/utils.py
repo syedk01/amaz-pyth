@@ -11,6 +11,8 @@ import math
 from numpy import matlib, dtype
 from numpy.linalg import eig, inv
 from numpy import fft
+import reader
+
 
 def get_line(x1, y1, x2, y2): #Returns list of points as a line between two points
 	x1=int(x1)
@@ -376,21 +378,23 @@ def border_definition(image, mask): #Pixel information on the border of the mask
 
 	return np.mean(Fm)
 		
-def radial_gradient_index(image, mask): #Still unused
+def radial_gradient_index(image, mask): #Radial gradient index feature calculator
 	pts = np.nonzero(mask)
-	ind = np.arange(mask.shape[0] * mask.shape[1])
-	ind = ind.reshape([mask.shape[0], mask.shape[1]])
-	I = [ind[pts[0][i], pts[1][i]] for i in xrange(pts[0].shape[0])]
+	
 	Cx = np.mean(pts[1])
 	Cy = np.mean(pts[0])
 	
 	F = np.gradient(image.astype(np.float64))
+	
         Fx = []
 	Fy = []
-	for i in I:
-		if i<F[1].shape[0] and i<F[0].shape[0] and i>=0:
-			Fx.append(F[1][i])
-			Fy.append(F[0][i])
+	
+	for i in xrange(pts[0].shape[0]):
+		Fy.append(F[0][pts[0][i]][pts[1][i]])
+		Fx.append(F[1][pts[0][i]][pts[1][i]])
+			
+	Fx = np.array(Fx)
+	Fy = np.array(Fy)
 
 	phi = np.arctan2(np.array(Fy), np.array(Fx))
 	xDiff = Cx - pts[1]
@@ -403,21 +407,22 @@ def radial_gradient_index(image, mask): #Still unused
 	RG = RG_nominator/RG_denominator
 	return RG
 
-def tangential_gradient_index(image, mask): #still unused
+def tangential_gradient_index(image, mask): #Calculating tangent features
         pts = np.nonzero(mask)
-        ind = np.arange(mask.shape[0] * mask.shape[1])
-        ind = ind.reshape([mask.shape[0], mask.shape[1]])
-        I = [ind[pts[0][i], pts[1][i]] for i in xrange(pts[0].shape[0])]
+        
         Cx = np.mean(pts[1])
         Cy = np.mean(pts[0])
 
         F = np.gradient(image.astype(np.float64))
         Fx = []
         Fy = []
-        for i in I:
-                if i<F[1].shape[0] and i<F[0].shape[0] and i>=0:
-                        Fx.append(F[1][i])
-                        Fy.append(F[0][i])
+        for i in xrange(pts[0].shape[0]):
+                Fy.append(F[0][pts[0][i]][pts[1][i]])
+                Fx.append(F[1][pts[0][i]][pts[1][i]])
+
+        Fx = np.array(Fx)
+        Fy = np.array(Fy)
+        
 
         phi = np.arctan2(np.array(Fy), np.array(Fx))
 
@@ -431,17 +436,17 @@ def tangential_gradient_index(image, mask): #still unused
         TG = TG_nominator/TG_denominator
         return TG
 
-def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):#unused
+def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):
 	hwidth = float(float(maskWidth-1)/2)
 	x = np.arange(-hwidth, hwidth+1, 1)
 	y = np.arange(-hwidth, hwidth+1, 1)
-	xn = np.empty((0, maskWidth))
-	yn = np.empty((maskWidth, 0))
+	xn = np.empty([0, maskWidth])
+	yn = np.empty([maskWidth, 0])
 	x = x.reshape(1, x.shape[0])
 	y = y.reshape(y.shape[0], 1)
 	for i in xrange(maskWidth):
-		xn = xn.vstack((xn, x))
-		yn = yn.hstack((yn, y))
+		xn = np.vstack((xn, x))
+		yn = np.hstack((yn, y))
 
 	xp = xn * math.cos(theta) - yn * math.sin(theta)
 	yp = xn * math.sin(theta) - yn * math.cos(theta)
@@ -469,7 +474,7 @@ def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):#unused
 
 	#ind1 = np.zeros(ind0.shape)
 
-	ind1 = np.invert(ind0.astype(bool)).asytpe(int)
+	ind1 = np.invert(ind0.astype(bool)).astype(int)
 
 	mean = np.sum(np.nonzero(gauss_mask))/np.sum(ind1)
 	
@@ -477,36 +482,85 @@ def create_gauss(theta, gaussLength, maskWidth, gaussSigma, maxSigma):#unused
                 for j in xrange(ind1.shape[1]):
                         if ind1[i, j] == 1:
                                 gauss_mask[i, j] = gauss_mask[i, j] - mean
-
 	return gauss_mask, xn
 	
 		
 
-class gauss: #Unused
+class gauss: #Gauss object
 	length = None
 	sigma = None
 	maskWidth = None
 	theta = None
 	templates = None
 
-def create_gaussian_masks(gaussLength, maskWidth, maxSigma, gaussSigma, theta): #unused
+def create_gaussian_masks(gaussLength, maskWidth, maxSigma, gaussSigma, theta): 
 	g = gauss()	
  	g.length = gaussLength
 	g.sigma = gaussSigma
 	g.maskWidth = maskWidth
 	g.theta = theta
 	nsigma = np.sum(np.array([g.sigma.shape[i] for i in xrange(len(g.sigma.shape))]));
-	ntheta = np.sum(np.array([g.sigma.theta[i] for i in xrange(len(g.theta.shape))]));
-	templates = np.zeros(g.maskWidth, g.maskWidth, nsigma, ntheta)
+	ntheta = np.sum(np.array([g.theta.shape[i] for i in xrange(len(g.theta.shape))]));
+	templates = np.zeros([g.maskWidth, g.maskWidth, nsigma, ntheta])
 	
 	for i in xrange(nsigma):
 		for j in xrange(ntheta):
-			templates[:, :, i, j] = create_gauss(g.theta[j], g.length, g.maskWidth, g.sigma[i], maxSigma)
+			templates[:, :, i, j], xn = create_gauss(g.theta[j], g.length, g.maskWidth, g.sigma[i], maxSigma)
 	g.templates = templates
+	return g
 
-def line_enhancement_index(image, mask): #Unused
+def line_enhancement_index(image, mask): #Line enhancement index feature extraction
 	filter_size = 11
+	nimage = np.zeros([2 * math.floor(filter_size/2) + image.shape[0], 2 * math.floor(filter_size/2) + image.shape[1]])
+	nmask = np.zeros([2 * math.floor(filter_size/2) + mask.shape[0], 2 * math.floor(filter_size/2) + mask.shape[1]])
+	offset = math.floor(filter_size/2)
+
+	for i in xrange(image.shape[0]):
+		for j in xrange(image.shape[1]):
+			nimage[i+offset][j+offset] = image[i][j]
+			nmask[i+offset][j+offset] = mask[i][j]
 	
+	image = nimage
+	mask = nmask
+	del nimage
+	del nmask
+
+        pts = np.nonzero(mask)
+
+        Cx = np.mean(pts[1])
+        Cy = np.mean(pts[0])
+
+        xDiff = Cx - pts[1]
+        yDiff = Cy - pts[0]
+        a = np.arctan2(yDiff, xDiff)
+	intensities = np.zeros([pts[0].shape[0]])
+
+	for i in xrange(pts[0].shape[0]):
+		angles = np.arange(a[i]-0.3927, a[i]+0.3927, 0.3927/5)
+		kernels = create_gaussian_masks(filter_size, filter_size, 1, np.array([1]), angles)
+		kernels.templates = np.squeeze(kernels.templates)
+		patch = np.zeros([2*offset+1, 2*offset+1])
+  		
+		k = 0
+
+		for m in xrange(int(pts[0][i] - offset), int(pts[0][i] + offset + 1)):
+			l = 0
+			for n in xrange(int(pts[1][i] - offset), int(pts[1][i] + offset + 1)):
+				if(m < image.shape[0] and m >= 0 and n < image.shape[1] and n >= 0):
+					patch[k][l] = image[m][n]
+				else:
+					patch[k][l] = 0
+				l = l + 1
+			k = k + 1
+		patch = np.expand_dims(patch, axis = 2)
+		patches = np.tile(patch, (1, 1, kernels.templates.shape[2]))
+		
+		intensity = np.sum(np.sum(np.multiply(patches.astype(np.float64), kernels.templates.astype(np.float64)), 0), 1) / filter_size ** 2
+		intensities[i] = np.amax(np.absolute(intensity))
+
+	LEI = np.mean(intensities)
+	return LEI	
+
 def calculate_obj_features(image, p): #This function combine all other function to calculate objective features
 	outline_mask = get_outline_mask(p, image.shape[0], image.shape[1])
 	mask = rasterize(outline_mask)
@@ -529,9 +583,12 @@ def calculate_obj_features(image, p): #This function combine all other function 
 	features.append(f3)
 	f = border_definition(image, outline_mask)
 	features.append(f)
-#	f = radial_gradient_index(image, outline_mask)	
-#	features.append(f)
-#	f = tangential_gradient_index(image, outline_mask)
+	f = radial_gradient_index(image, outline_mask)	
+	features.append(f)
+	f = tangential_gradient_index(image, outline_mask)
+	features.append(f)
+	f = line_enhancement_index(dcm, outline_mask)
+	features.append(f)
 
 	return features
 
@@ -539,10 +596,17 @@ def calculate_obj_features(image, p): #This function combine all other function 
 if __name__=='__main__':# A test main function, never used
 	import sys
  
-	img=get_outline_mask('(298, 436),(298, 436),(298, 434),(298, 428),(298, 425),(298, 422),(299, 417),(299, 415),(300, 414),(300, 413),(300, 412),(300, 411),(300, 409),(300, 408),(297, 398),(295, 395),(291, 392),(290, 390),(289, 389),(285, 388),(282, 388),(278, 387),(277, 387),(276, 387),(275, 387),(272, 387),(271, 387),(271, 388),(270, 388),(270, 389),(268, 390),(267, 394),(264, 397),(263, 401),(260, 407),(258, 411),(254, 418),(254, 421),(254, 422),(254, 424),(254, 426),(254, 429),(254, 431),(254, 432),(255, 435),(258, 436),(261, 437),(267, 438),(271, 440),(273, 440),(274, 440),(276, 440),(277, 440),(278, 440),(280, 440),(282, 440),(283, 440),(284, 440),(286, 440),(287, 440),(288, 440),(289, 440),(290, 438),(292, 437),(294, 437),(294, 436),(296, 434),(297, 431),(299, 428),(300, 426),(300, 424),(302, 423)', 500, 500)
+	outline_mask = get_outline_mask('(252, 399),(252, 399),(250, 399),(249, 399),(248, 399),(247, 399),(246, 399),(244, 399),(243, 399),(241, 399),(234, 402),(233, 403),(231, 406),(228, 408),(226, 413),(224, 414),(224, 415),(222, 417),(222, 418),(222, 421),(222, 424),(222, 425),(222, 427),(222, 429),(222, 432),(222, 435),(224, 437),(225, 438),(227, 440),(228, 441),(229, 443),(230, 443),(230, 444),(231, 445),(232, 445),(233, 445),(234, 445),(236, 446),(238, 446),(239, 446),(240, 446),(241, 445),(243, 444),(245, 443),(246, 442),(247, 441),(249, 441),(252, 439),(256, 435),(257, 435),(257, 434),(258, 432),(262, 428),(263, 428),(264, 427),(266, 426),(266, 425),(266, 423),(268, 418),(268, 417),(268, 415),(268, 413),(268, 412),(269, 411),(269, 409),(269, 408),(270, 407),(271, 403),(271, 402),(271, 401),(271, 400),(271, 399),(271, 398),(271, 397),(270, 396),(269, 395),(269, 394),(268, 393),(267, 393),(266, 393),(264, 393),(263, 393),(262, 393),(261, 393),(260, 393),(259, 394),(258, 394),(257, 394),(256, 394),(255, 394),(254, 394),(253, 394)', 560, 560)
 	#print np.array_equal(img.astype(np.uint8), rasterize(img))
-	val = degree_of_circularity(rasterize(img))
-	val = degree_of_ellipticity(img) 
-	print val
-	fm, rmsv, doi = marginal_irregularity(img)
-	print border_definition(img, img)
+	#val = degree_of_circularity(rasterize(img))
+	#val = degree_of_ellipticity(img) 
+	#print val
+	#fm, rmsv, doi = marginal_irregularity(img)
+	#print border_definition(img, img)
+	dcm = reader.read("000001.dcm")
+	print dcm.shape	
+	f = tangential_gradient_index(dcm, outline_mask)
+	print f
+	
+	f = line_enhancement_index(dcm, outline_mask)
+	print f
