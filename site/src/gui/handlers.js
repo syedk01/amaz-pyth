@@ -134,6 +134,7 @@ dwv.gui.onClassifyClick = function(event)
 	}
 //	alert(path);
 	var fileselect = document.getElementById("imagefiles");
+	var urlselect = document.getElementById("imageurl");
 	var featureString = '[' + featurevalue1 + ','  + featurevalue2 + ',' + featurevalue3 + ',' + featurevalue4 + ',' + featurevalue5 + ',' + featurevalue6 + ',' + featurevalue7 + ',' + featurevalue8 + ']';
 	
 	$("#popupClassify").popup("close");
@@ -142,12 +143,18 @@ dwv.gui.onClassifyClick = function(event)
 		alert('Please use the ROI (under Draw) or livewire tool to annotate a nodule before classification.');
 	    return;
 	}
-/*	if(fileselect.files.length === 0){
+	if(fileselect.files.length === 0 && urlselect.files.length == 0){
 		alert('Please load a DICOM image and use the livewire tool to annotate a nodule before classification.');
 	    return;
-	}*/
-	
-	var file = document.getElementById("imagefiles").files[0];
+	}
+	var file = "";
+	if(fileselect.files.length === 0){
+		 file = document.getElementById("imagefiles").files[0];
+	}
+	else
+	{
+		file = document.getElementById("imageurl").files[0];
+	}
 //	alert(file);
     var fd = new FormData();
 	fd.append('upload', file);
