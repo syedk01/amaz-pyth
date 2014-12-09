@@ -148,7 +148,7 @@ dwv.gui.onClassifyClick = function(event)
 	    return;
 	}
 	var file = "";
-	if(fileselect.files.length === 0){
+	if(fileselect.files.length != 0){
 		 file = document.getElementById("imagefiles").files[0];
 	}
 	else
