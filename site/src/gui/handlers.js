@@ -154,6 +154,7 @@ dwv.gui.onClassifyClick = function(event)
 	else
 	{
 		file = document.getElementById("imageurl").files[0];
+		alert(JSON.stringify(file));
 	}
 //	alert(file);
     var fd = new FormData();
