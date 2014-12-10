@@ -1,4 +1,4 @@
-amaz-pyth v 40.1
+amaz-pyth v 1.40.1
 =================
 Installation Guide:
 ===================
