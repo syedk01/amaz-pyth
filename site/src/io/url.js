@@ -39,11 +39,15 @@ dwv.io.Url.prototype.load = function(ioArray)
     // DICOM request loader
     var onLoadDicomRequest = function(response)
     {
+	
         // parse DICOM file
         try {
             var tmpdata = dwv.image.getDataFromDicomBuffer(response);
             // call listener
             onload(tmpdata);
+		 urlfile = new response;
+                alert(JSON.stringify(urlfile));
+
         } catch(error) {
             onerror(error);
         }
@@ -52,7 +56,7 @@ dwv.io.Url.prototype.load = function(ioArray)
         var endEvent = {lengthComputable: true, loaded: 1, total: 1};
         dwv.gui.updateProgress(endEvent);
         
- 
+
         //Close file load dialog
         $( "#popupOpen" ).popup("close"); };   // Image request loader
     var onLoadImageRequest = function(/*event*/)
@@ -101,7 +105,7 @@ dwv.io.Url.prototype.load = function(ioArray)
             tmpImage.onload = onLoadImageRequest;
         }
         else
-        {
+    	{
             onLoadDicomRequest(this.response);
         }
     };

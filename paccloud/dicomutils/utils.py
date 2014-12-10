@@ -587,8 +587,8 @@ def calculate_obj_features(image, p): #This function combine all other function 
 	features.append(f)
 	f = tangential_gradient_index(image, outline_mask)
 	features.append(f)
-	f = line_enhancement_index(image, outline_mask)
-	features.append(f)
+#	f = line_enhancement_index(image, outline_mask)
+#	features.append(f)
 
 	return features
 

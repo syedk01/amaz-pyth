@@ -26,7 +26,7 @@ import dicom
 	# return arrayData
 
 def read(file): #Reading the dicom images. Now only handles single slice dicom. Reading of multislice dicom has to be added
-	ds=dicom.read_file(file)
+	ds=dicom.read_file(file, None, False, True)
 	img=ds.pixel_array
 	return img
 

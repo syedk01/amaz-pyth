@@ -20,9 +20,9 @@ TODO:
 3. Implement nnet and knn.
 4. Adding model chooser(svm/knn/nnet) on the front end gui.
 
-Known Issues:
+Issues:
 =============
 
-1. Can't load multislice dicom images.
-2. Can't laod from google drive url.
-3. Struggles to handle large dicom files.
+1. Python KNN cross validation producing average error result of 0.40, where Matlab's is 0.19. Need to imporve Python's cross validation score.
+2. Node js server do not find the file loaded from url.
+3. Python cannot read multi slice dicom images.

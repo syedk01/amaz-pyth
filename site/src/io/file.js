@@ -48,7 +48,7 @@ dwv.io.File.prototype.load = function(ioArray)
     {
         // parse DICOM file
         try {
-			//alert(event.target.result);
+//			alert(JSON.stringify(event.target.result));
             var tmpdata = dwv.image.getDataFromDicomBuffer(event.target.result);
             // call listener
             onload(tmpdata);
@@ -107,6 +107,7 @@ dwv.io.File.prototype.load = function(ioArray)
             reader.onload = onLoadDicomReader;
             reader.onprogress = dwv.gui.updateProgress;
             reader.onerror = onErrorDicomReader;
+//	    alert(JSON.stringify(file));
             reader.readAsArrayBuffer(file);
         }
     }

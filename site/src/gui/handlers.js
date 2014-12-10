@@ -143,26 +143,34 @@ dwv.gui.onClassifyClick = function(event)
 		alert('Please use the ROI (under Draw) or livewire tool to annotate a nodule before classification.');
 	    return;
 	}
-	if(fileselect.files.length === 0 && urlselect.file.length === 0){
+/*	if(fileselect.files.length === 0 && urlselect.file.length === 0){
 		alert('Please load a DICOM image and use the livewire tool to annotate a nodule before classification.');
 	    return;
-	}
+	}*/
 	var file = "";
+	var name = "";
 	if(fileselect.files.length != 0){
 		 file = document.getElementById("imagefiles").files[0];
+		//alert(JSON.stringify(file));
 	}
 	else
 	{
-		file = document.getElementById("imageurl").files[0];
-		alert(JSON.stringify(file));
+		var val = document.getElementById("imageurl").value;
+		var pos =  val.search(/\/[^\/]+.dcm/i) + 1;
+		name = val.substring(pos);
+		file = new File([""], urlfile);
+		file.name = name;
+		//file = JSON.parse("{\"name\" : \"" + val + "\"}");
+		//alert(JSON.stringify(document.getElementById("imageurl")));
 	}
-//	alert(file);
-    var fd = new FormData();
+	
+	var fd = new FormData();
 	fd.append('upload', file);
+	alert(JSON.stringify(file));
 	fd.append('path', path);
 	fd.append('subjective', featureString);
 	fd.append('classifier', classifierValue);
-	
+	alert(JSON.stringify(fd));
     document.getElementById("progress_div").style.display='block';
     document.getElementById("classifybutton").disabled = true;
     
