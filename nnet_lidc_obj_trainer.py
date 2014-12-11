@@ -8,12 +8,18 @@
 import csv
 import numpy as np
 import os
-from sklearn import svm
+from pybrain import datasets
+from pybrain.datasets import classification
+from pybrain import tools
+from pybrain.tools import shortcuts
+from pybrain import supervised
+from pybrain.supervised import trainers
 from sklearn import cross_validation
-from sklearn.externals import joblib
 from sklearn.cross_validation import KFold
 from sklearn import preprocessing
 from sklearn import decomposition
+
+hidden_layer = 100
 
 X = np.empty([0, 12]).astype(np.float64) #Feature array
 Y = [] #Target class
@@ -27,9 +33,13 @@ for row in reader: # Reading the csv row by row
 
 Y = np.array(Y).astype(np.float64)
 
-Y = (Y - 1)/4 # Normalizing the target array. I case of LIDC subjective, the value is 1-4
+Y = (Y - 1)/5 # Normalizing the target array. I case of LIDC subjective, the value is 1-4
 
-clf = svm.SVC(gamma = 10)
+ds = classification.ClassificationDataSet(X.shape[1], 1, 5)
+
+net = shortcuts.buildNetwork(X.shape[1], hidden_layer, 1, bias = True)
+
+
 
 kf = KFold(33315, n_folds = 10)
 
@@ -38,20 +48,32 @@ stdv = []
 
 for train, test in kf:
 	X_train, X_test, Y_train, Y_test = X[train], X[test], Y[train], Y[test] # Splitting the training data
-	clft = svm.SVC( gamma = 10)
-	#print X_train.shape
+	
+	ds_t = classification.ClassificationDataSet(X_train.shape[1], 1, 5) 
+	net_t = shortcuts.buildNetwork(X_train.shape[1], hidden_layer, 1, bias = True)
+
 	X_train =  preprocessing.scale(X_train.astype(np.float64)) # Feature scaling and normalization
-#	X_train =  preprocessing.scale(X_train.astype(np.float64))
-	X_train  = preprocessing.normalize(X_train.astype(np.float64), norm = 'l2')
-	pca = decomposition.PCA(); #PCA decomposition
+	X_train  = preprocessing.normalize(X_train.astype(np.float64), norm = 'l1')
+	pca = decomposition.PCA( whiten = True ); #PCA decomposition
 	pca.fit(X_train)
 	X_train = pca.transform(X_train)
-	clft.fit(X_train, Y_train)
+
 	X_test = preprocessing.scale(X_test.astype(np.float64))
-	X_test  = preprocessing.normalize(X_test.astype(np.float64), norm = 'l2')
-#	X_test = preprocessing.scale(X_test.astype(np.float64))
+	X_test  = preprocessing.normalize(X_test.astype(np.float64), norm = 'l1')
 	X_test = pca.transform(X_test)
-	P = clft.predict(X_test)
+	
+	for i in xrange(X_train.shape[0]):
+		ds_t.addSample([X_train[i][n] for n in xrange(X_train.shape[1])], [Y_train[i]])
+
+	trainer_t = trainers.BackpropTrainer( net_t, ds_t )
+	trainer_t.train()
+	
+	P = []
+	for i in xrange(X_test.shape[0]):
+		P.append(0)
+		P[i] = net_t.activate([X_test[i][n] for n in xrange(X_test.shape[1])])[0]
+
+	P = np.array(P)
 
 	for e in xrange(P.shape[0]):
 		if P[e]<0:
@@ -73,7 +95,12 @@ print np.std(np.array(scores))
 
 #print scores
 
-clf.fit(X, Y)
+#ds.setField( 'input', X )
+#ds.setField( 'target', Y )
 
-joblib.dump(clf, os.environ["PAC_HOME"]+'/paccloud/data/LIDC/objective/svm_lidc_obj_train_data.pkl') #Saving the objective training file
+#trainer = trainers.BackpropTrainer( net, ds )
+#trainer.trainUntilConvergence( verbose = True, validationProportion = 0.15, maxEpochs = 1000, continueEpochs = 10 )
+
+
+#joblib.dump(clf, os.environ["PAC_HOME"]+'/paccloud/data/LIDC/objective/knn_lidc_obj_train_data.pkl') #Saving the objective training file
 

@@ -8,48 +8,69 @@
 import csv
 import numpy as np
 import os
-#import sklearn as skl
 from sklearn import neighbors
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn import cross_validation
 from sklearn.externals import joblib
 from sklearn.cross_validation import KFold
-X = np.empty([0, 8]) #Feature array
-Y = [] #Target class
+from sklearn import preprocessing
+from sklearn import decomposition
 
+X = np.empty([0, 8]).astype(np.float64) #Feature array
+Y = [] #Target class
 f = open('sub_master_file.csv', 'rb')#Reading the training data
 reader = csv.reader(f)
 
-for row in reader:
+for row in reader: # Reading the csv row by row
 	Y.append(row.pop())
-	X = np.vstack((X, row))
+#	row.pop()
+	X=np.vstack((X, row))
 
+Y = np.array(Y).astype(np.float64)
 
-clf = neighbors.KNeighborsClassifier(n_neighbors = 25)
+Y = (Y - 1)/4 # Normalizing the target array. I case of LIDC subjective, the value is 1-4
 
-kf = KFold(6470, n_folds = 10)
+clf = neighbors.KNeighborsClassifier(n_neighbors = 2)
+
+kf = KFold(6000, n_folds = 10)
 
 scores = []
 stdv = []
 
 for train, test in kf:
-        X_train, X_test, Y_train, Y_test = X[train], X[test], Y[train], Y[test]
-        clft = neighbors.KNeighborsClassifier(n_neighbors = 25)
-        clft.fit(X_train, Y_train)
+	X_train, X_test, Y_train, Y_test = X[train], X[test], Y[train], Y[test] # Splitting the training data
+	clft = neighbors.KNeighborsClassifier(n_neighbors = 2 ) 
+	#print X_train.shape
+	X_train =  preprocessing.scale(X_train.astype(np.float64)) # Feature scaling and normalization
+#	X_train =  preprocessing.scale(X_train.astype(np.float64))
+	X_train  = preprocessing.normalize(X_train.astype(np.float64), norm = 'l2')
+	pca = decomposition.PCA(); #PCA decomposition
+	pca.fit(X_train)
+	X_train = pca.transform(X_train)
+	clft.fit(X_train, Y_train)
+	X_test = preprocessing.scale(X_test.astype(np.float64))
+	X_test  = preprocessing.normalize(X_test.astype(np.float64), norm = 'l2')
+#	X_test = preprocessing.scale(X_test.astype(np.float64))
+	X_test = pca.transform(X_test)
+	P = clft.predict(X_test)
 
-        P = clft.predict(X_test)
-        #print type(P), P.shape, type(Y_test), Y_test.shape
-        diff = P.astype(np.float64) - Y_test.astype(np.float64)
-#       diff = np.absolute(diff)
-        #print type(diff), diff
-        scores.append(np.sum(diff)/Y_test.shape[0])
-        #stdv.append(np.std(diff))
+	for e in xrange(P.shape[0]):
+		if P[e]<0:
+			P[e] = 0
+		elif P[e]>0:
+			P[e] = 1
 
-print scores
+	#print type(P), P.shape, type(Y_test), Y_test.shape	
+	diff = P.astype(np.float64) - Y_test.astype(np.float64)
+	diff = np.fabs(diff) # Calculating the absoulte difference between predicted value and real value
+	print np.sum(diff)
+	#print type(diff), diff	
+	scores.append(np.sum(diff)/Y_test.shape[0])
+	#stdv.append(np.std(diff))
+
+print scores 
 print np.std(np.array(scores))
-
-
-#scores=cross_validation.cross_val_score(clf, X, np.array(Y), cv=10)
+#scores=cross_validation.cross_val_score(clf, X, np.array(Y), cv=10, scoring = 'f1')
 
 #print scores
 
