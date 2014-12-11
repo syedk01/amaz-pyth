@@ -73,6 +73,13 @@ print np.std(np.array(scores))
 
 #print scores
 
+X =  preprocessing.scale(X.astype(np.float64)) # Feature scaling and normalization
+X = preprocessing.normalize(X.astype(np.float64), norm = 'l1')
+pcag = decomposition.PCA( whiten = True ); #PCA decomposition
+pcag.fit(X)
+X = pcag.transform(X)
+
+
 clf.fit(X, Y)
 
 joblib.dump(clf, os.environ["PAC_HOME"]+'/paccloud/data/LIDC/objective/knn_lidc_obj_train_data.pkl') #Saving the objective training file

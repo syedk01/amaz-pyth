@@ -41,7 +41,6 @@ for train, test in kf:
 	clft = svm.SVC()
 	#print X_train.shape
 	X_train =  preprocessing.scale(X_train.astype(np.float64)) # Feature scaling and normalization
-#	X_train =  preprocessing.scale(X_train.astype(np.float64))
 	X_train  = preprocessing.normalize(X_train.astype(np.float64), norm = 'l2')
 	pca = decomposition.PCA(); #PCA decomposition
 	pca.fit(X_train)
@@ -49,7 +48,6 @@ for train, test in kf:
 	clft.fit(X_train, Y_train)
 	X_test = preprocessing.scale(X_test.astype(np.float64))
 	X_test  = preprocessing.normalize(X_test.astype(np.float64), norm = 'l2')
-#	X_test = preprocessing.scale(X_test.astype(np.float64))
 	X_test = pca.transform(X_test)
 	P = clft.predict(X_test)
 
@@ -69,9 +67,13 @@ for train, test in kf:
 
 print scores 
 print np.std(np.array(scores))
-#scores=cross_validation.cross_val_score(clf, X, np.array(Y), cv=10, scoring = 'f1')
 
-#print scores
+X =  preprocessing.scale(X.astype(np.float64)) # Feature scaling and normalization
+X = preprocessing.normalize(X.astype(np.float64), norm = 'l1')
+pcag = decomposition.PCA( whiten = True ); #PCA decomposition
+pcag.fit(X)
+X = pcag.transform(X)
+
 
 clf.fit(X, Y)
 
